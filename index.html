@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rut Kit by Kino</title>
+<style>
+  :root { --cream:#f6f1e7; --ink:#1d1a17; --gold:#F3F08C; --brown:#3b2417; --card:#fffdf8; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Inter', system-ui, Arial, sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; padding:20px 16px 48px; }
+  header { text-align:center; margin:12px 0 22px; }
+  header .tag { font-size:12px; letter-spacing:.2em; text-transform:uppercase; color:var(--brown); }
+  header h1 { font-size:38px; font-weight:900; letter-spacing:-.02em; margin-top:6px; }
+  header p { margin-top:8px; color:#5b4d42; font-size:15px; line-height:1.4; }
+  nav { display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; margin-bottom:16px; scrollbar-width:none; }
+  nav button { flex:0 0 auto; border:2px solid var(--ink); background:transparent; border-radius:40px; padding:9px 14px; font:inherit; font-weight:700; font-size:14px; cursor:pointer; }
+  nav button.on { background:var(--ink); color:var(--gold); }
+  .card { background:var(--card); border-radius:22px; padding:22px 20px; box-shadow:0 14px 30px rgba(60,40,20,.12); }
+  .card h2 { font-size:22px; font-weight:900; letter-spacing:-.01em; }
+  .card .sub { color:#6b5f52; font-size:14px; margin-top:4px; line-height:1.4; }
+  .result { margin:20px 0 14px; padding:22px 16px; border-radius:16px; background:var(--ink); color:var(--cream); text-align:center; min-height:150px; display:flex; flex-direction:column; justify-content:center; gap:8px; }
+  .result .big { font-size:30px; font-weight:900; color:var(--gold); letter-spacing:-.01em; line-height:1.1; }
+  .result .small { font-size:15px; opacity:.85; line-height:1.4; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; }
+  .btn { flex:1 1 auto; border:0; border-radius:14px; padding:14px; font:inherit; font-weight:800; font-size:15px; cursor:pointer; background:var(--gold); color:var(--ink); }
+  .btn.alt { background:transparent; border:2px solid var(--ink); }
+  .lock { font-size:13px; color:#6b5f52; margin-top:10px; }
+  .timer { font-size:64px; font-weight:900; text-align:center; margin:14px 0; font-variant-numeric:tabular-nums; }
+  .hidden { display:none; }
+  footer { text-align:center; margin-top:26px; font-size:13px; color:#6b5f52; }
+  footer a { color:var(--brown); font-weight:700; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tag">Kino · Free tool</div>
+  <h1>Rut Kit</h1>
+  <p>Stuck creatively? Five tiny tools to get you moving again. No sign-up. Just tap.</p>
+</header>
+
+<nav>
+  <button class="on" data-tab="brand">Brand Forge</button>
+  <button data-tab="word">Word Spin</button>
+  <button data-tab="constraint">Constraint</button>
+  <button data-tab="palette">Mood Palette</button>
+  <button data-tab="timer">Bad Ideas Timer</button>
+</nav>
+
+<!-- 1. BRAND FORGE -->
+<section class="card" id="tab-brand">
+  <h2>Brand Forge</h2>
+  <p class="sub">Invent a brand from scratch: name, category, tagline, colours and a product. Keep what you love, reroll the rest.</p>
+  <div class="result" id="brand-out"><div class="big">Tap Forge</div><div class="small">Your brand will appear here.</div></div>
+  <div class="row"><button class="btn" id="brand-go">Forge a brand</button></div>
+  <div class="row" style="margin-top:10px"><button class="btn alt" id="brand-copy">Copy brand</button></div>
+  <p class="lock" id="brand-note"></p>
+</section>
+
+<!-- 2. WORD SPIN -->
+<section class="card hidden" id="tab-word">
+  <h2>Word Spin</h2>
+  <p class="sub">Three random words. Make something, anything, that uses all three within 20 minutes.</p>
+  <div class="result" id="word-out"><div class="big">Tap Spin</div><div class="small">Three words will land here.</div></div>
+  <div class="row"><button class="btn" id="word-go">Spin</button></div>
+</section>
+
+<!-- 3. CONSTRAINT -->
+<section class="card hidden" id="tab-constraint">
+  <h2>Constraint Card</h2>
+  <p class="sub">Limits make ideas. Draw one rule and create inside it.</p>
+  <div class="result" id="constraint-out"><div class="big">Tap Draw</div><div class="small">Your rule will appear here.</div></div>
+  <div class="row"><button class="btn" id="constraint-go">Draw a rule</button></div>
+</section>
+
+<!-- 4. MOOD PALETTE -->
+<section class="card hidden" id="tab-palette">
+  <h2>Mood Palette</h2>
+  <p class="sub">Pick a mood, get four colours. Build a post, a brand or a room around them.</p>
+  <div class="result" id="palette-out"><div class="big">Tap Mood</div><div class="small">A mood and its palette will appear here.</div></div>
+  <div class="row"><button class="btn" id="palette-go">New mood</button></div>
+</section>
+
+<!-- 5. BAD IDEAS TIMER -->
+<section class="card hidden" id="tab-timer">
+  <h2>Bad Ideas Timer</h2>
+  <p class="sub">Five minutes. Write as many terrible ideas as you can. The bad ones unlock the good ones.</p>
+  <div class="timer" id="timer-out">5:00</div>
+  <div class="row"><button class="btn" id="timer-go">Start</button><button class="btn alt" id="timer-reset">Reset</button></div>
+</section>
+
+<footer>
+  Made by Kino · <a href="#" id="footer-link">Want this brand made for real?</a>
+</footer>
+
+<!-- Cloudflare Web Analytics: paste your token here once you create the site in the Cloudflare dashboard -->
+<!-- <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "YOUR_TOKEN_HERE"}'></script> -->
+<script>
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const $ = id => document.getElementById(id);
+
+/* ---- editable lists ---- */
+const NAME_A = ['Velvet','Tangle','Moon','Sunny','Quiet','Bold','Wild','Soft','Honey','Static','Paper','River','Loud','Tiny','Gold'];
+const NAME_B = ['Lab','Nest','Co','Dust','House','Garden','Club','Works','Hour','Room','Mood','Field','Studio','Loft','Stone'];
+const CATEGORY = ['perfume','chai','sneakers','candles','jewellery','bags','ice cream','skincare','notebooks','hair oil','sunglasses','bread','pillows','socks','tea towels'];
+const TAGLINE = ['Made slowly.','Built for tuesdays.','Less, but louder.','Keep the feeling.','For the in-between.','Warm on purpose.','Small batch, big mood.','Plain, then peculiar.'];
+const COLOURS = ['#F3F08C','#3b2417','#E31E24','#2f4f4f','#f4c2a1','#c8d5b9','#1d1a17','#e8d5f0','#f6f1e7','#9bb7d4'];
+const PRODUCT = ['a pocket-sized version','a limited drop of 100','a refill system','a subscription box','a seasonal set','a travel edition','a mini version','a gift bundle'];
+const WORDS = ['mirror','lantern','fog','ladder','thread','kettle','compass','paperclip','bridge','orchard','feather','tram','pebble','stairwell','postcard','harbour','ember','window','socks','trumpet','moth','meadow','lighthouse','spoon','rain'];
+const VERBS = ['carry','fold','hide','repair','wake','trade','measure','follow','borrow','paint','count','share'];
+const CONSTRAINTS = ['Use only one colour.','Make it in under 60 seconds.','No faces, only hands.','Use a phone, nothing else.','Make it for someone you dislike.','Start with the last thing you did.','Only words, no visuals.','Make the ugliest possible version first.','Use a sound you can hear right now.','Explain it to a 7-year-old.','Make it silent. No music, no speech.','Use three objects within arm\'s reach.','Start from an ending, then work backwards.'];
+const MOODS = [
+  {mood:'Late-night cafe', colours:['#3b2417','#f4c2a1','#F3F08C','#f6f1e7']},
+  {mood:'Monsoon morning', colours:['#2f4f4f','#9bb7d4','#c8d5b9','#f6f1e7']},
+  {mood:'Old cinema', colours:['#E31E24','#1d1a17','#F3F08C','#f4c2a1']},
+  {mood:'Quiet Sunday', colours:['#c8d5b9','#f6f1e7','#e8d5f0','#f4c2a1']},
+  {mood:'Loud market', colours:['#E31E24','#F3F08C','#9bb7d4','#1d1a17']},
+  {mood:'Velvet evening', colours:['#2f4f4f','#3b2417','#e8d5f0','#F3F08C']}
+];
+
+/* ---- anonymous counts (no names, no personal data) ---- */
+// Set this to your free counter endpoint once it exists. Until then, counts stay on this device only.
+const COUNT_ENDPOINT = '';
+const track = (event, tool) => {
+  const key = 'rutkit-counts';
+  const counts = JSON.parse(localStorage.getItem(key) || '{}');
+  const k = tool ? `${event}:${tool}` : event;
+  counts[k] = (counts[k] || 0) + 1;
+  localStorage.setItem(key, JSON.stringify(counts));
+  if (COUNT_ENDPOINT) {
+    fetch(COUNT_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ event, tool: tool || null, t: Date.now() }) }).catch(() => {});
+  }
+};
+track('page_view');
+
+/* ---- tabs ---- */
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    document.querySelectorAll('section.card').forEach(s => s.classList.add('hidden'));
+    $('tab-' + btn.dataset.tab).classList.remove('hidden');
+    track('tool_open', btn.dataset.tab);
+  });
+});
+
+/* ---- 1. brand forge ---- */
+let lastBrand = null;
+$('brand-go').addEventListener('click', () => {
+  track('roll', 'brand');
+  const name = pick(NAME_A) + pick(NAME_B);
+  const cat = pick(CATEGORY), tag = pick(TAGLINE), col = pick(COLOURS), prod = pick(PRODUCT);
+  lastBrand = `${name} — ${cat}\n"${tag}"\nColour: ${col}\nProduct: ${prod} of a ${cat}`;
+  $('brand-out').innerHTML = `<div class="big">${name}</div><div class="small">${cat[0].toUpperCase()+cat.slice(1)} · "${tag}"</div><div class="small">Signature colour <span style="display:inline-block;width:14px;height:14px;border-radius:50%;background:${col};vertical-align:middle"></span> · ${prod}</div>`;
+  $('brand-note').textContent = 'Happy? Copy it. Not happy? Forge again.';
+});
+$('brand-copy').addEventListener('click', () => {
+  if (!lastBrand) { $('brand-note').textContent = 'Forge a brand first.'; return; }
+  navigator.clipboard?.writeText(lastBrand);
+  $('brand-note').textContent = 'Copied. Go make it real.';
+});
+
+/* ---- 2. word spin ---- */
+$('word-go').addEventListener('click', () => {
+  track('roll', 'word');
+  const w = [pick(WORDS), pick(WORDS), pick(VERBS)];
+  $('word-out').innerHTML = `<div class="big">${w[0]} · ${w[1]} · ${w[2]}</div><div class="small">Make something that uses all three in 20 minutes.</div>`;
+});
+
+/* ---- 3. constraint ---- */
+$('constraint-go').addEventListener('click', () => {
+  track('roll', 'constraint');
+  $('constraint-out').innerHTML = `<div class="big">${pick(CONSTRAINTS)}</div><div class="small">Work inside it. That's the whole exercise.</div>`;
+});
+
+/* ---- 4. palette ---- */
+$('palette-go').addEventListener('click', () => {
+  track('roll', 'palette');
+  const m = pick(MOODS);
+  const chips = m.colours.map(c => `<span style="display:inline-block;width:38px;height:38px;border-radius:10px;background:${c};border:1px solid rgba(255,255,255,.2)"></span>`).join(' ');
+  $('palette-out').innerHTML = `<div class="big">${m.mood}</div><div class="small">${chips}</div><div class="small">Build one thing using only these four.</div>`;
+});
+
+/* ---- 5. timer ---- */
+let t = 300, iv = null;
+const render = () => { const m = Math.floor(t/60), s = String(t%60).padStart(2,'0'); $('timer-out').textContent = `${m}:${s}`; };
+$('timer-go').addEventListener('click', () => {
+  track('roll', 'timer');
+  if (iv) { clearInterval(iv); iv = null; $('timer-go').textContent = 'Start'; return; }
+  $('timer-go').textContent = 'Pause';
+  iv = setInterval(() => { if (t > 0) { t--; render(); } else { clearInterval(iv); iv = null; $('timer-go').textContent = 'Start'; $('timer-out').textContent = 'Done. Keep the best one.'; } }, 1000);
+});
+$('timer-reset').addEventListener('click', () => { clearInterval(iv); iv = null; t = 300; render(); $('timer-go').textContent = 'Start'; });
+
+$('footer-link').addEventListener('click', e => { e.preventDefault(); alert('Replace this link with your Kino contact page.'); });
+</script>
+</body>
+</html>
