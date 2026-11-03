@@ -6,10 +6,11 @@
 <title>Rut Kit by Kino: order a way out of your creative rut</title>
 <meta name="description" content="Stuck in a creative rut? Five quick tools to get unstuck, plus a photo booth for enjoying it. Free, no sign-up, no bill.">
 <meta name="theme-color" content="#ffe9e4">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="preload" href="fonts/BricolageGrotesque.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/DMSans.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+  @font-face { font-family:'Bricolage Grotesque'; src:url('fonts/BricolageGrotesque.woff2') format('woff2'); font-weight:200 800; font-stretch:75% 100%; font-display:swap; }
+  @font-face { font-family:'DM Sans'; src:url('fonts/DMSans.woff2') format('woff2'); font-weight:100 1000; font-display:swap; }
   :root {
     --coral:#ff5a4e; --coral-d:#d63f35; --ink:#3b2a2e; --soft:#7d6a6e;
     --mint:#1fa57a; --mint-d:#147a5a; --orange:#f0a22a; --orange-d:#c07d12;
@@ -212,6 +213,49 @@
   /* photo booth: vintage look */
   .cab video { filter:sepia(.3) contrast(1.08) saturate(.88) brightness(1.04); }
   .cab::after { content:''; position:absolute; inset:0; z-index:2; pointer-events:none; background:radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(40,15,5,.5) 100%), linear-gradient(100deg, rgba(255,120,40,.2), rgba(255,120,40,0) 38%); }
+  /* phone only */
+  @media (max-width:640px) {
+    body { font-size:15px; }
+    .top .wrap { padding-top:8px; padding-bottom:8px; }
+    .logo b { font-size:18px; } .logo i { width:38px; height:38px; font-size:20px; }
+    .pill { font-size:13px; padding:7px 11px; }
+    .hero { text-align:center; padding:22px 0 14px; gap:22px; }
+    .tag { font-size:12.5px; padding:5px 12px; }
+    h1 { font-size:clamp(34px, 10.4vw, 44px); margin:12px 0 10px; }
+    .lede { font-size:15.5px; margin-left:auto; margin-right:auto; }
+    .hero .cta { justify-content:center; gap:10px; margin-top:18px; }
+    .hero .cta .btn { font-size:15.5px; padding:12px 20px; }
+    .ticket { padding:18px 16px 16px; max-width:300px; }
+    .ticket h3 { font-size:13px; text-align:center; }
+    .ticket .ln { font-size:13.5px; padding:7px 0; } .ticket .tot { font-size:17px; }
+    .promos { gap:10px; }
+    .promo { text-align:center; padding:14px; } .promo b { font-size:21px; } .promo span { font-size:14px; }
+    .sec-h { flex-direction:column; align-items:center; justify-content:center; text-align:center; margin:30px 0 12px; gap:4px; }
+    .sec-h h2 { font-size:28px; } .sec-h p { font-size:14.5px; }
+    .tool { padding:16px; border-radius:22px; } .tool h3 { font-size:20px; } .tool p { font-size:14.5px; }
+    .tool .e { width:50px; height:50px; font-size:26px; border-radius:16px; }
+    .tool.fun { align-items:center; text-align:center; }
+    .tool.fun .meta { justify-content:space-between; }
+    .about { text-align:center; padding:22px 18px; justify-items:center; margin-top:30px; }
+    .about h3 { font-size:23px; } .about p { font-size:14.5px; }
+    footer { font-size:13px; padding-bottom:36px; }
+    /* tool dialogs */
+    .sheet-h { padding:13px 14px 10px; } .sheet-h h2 { font-size:21px; gap:8px; } .x { width:38px; height:38px; }
+    .sheet-b { padding:14px 14px 22px; font-size:14.5px; }
+    .sheet-b .big { font-size:24px; }
+    .sheet-b .row { justify-content:center; }
+    .sheet-b .btn { font-size:15.5px; padding:12px 18px; }
+    .sheet-b .btn.sm { font-size:14px; padding:9px 14px; }
+    .sheet-b .lbl { font-size:12px; }
+    .sheet-b .in { font-size:16px; padding:12px 14px; }
+    .brief .f span { font-size:16.5px; } .brief .f b { font-size:11px; }
+    .sheet-b .muted { font-size:14px; }
+    .ideas { justify-content:center; } .ideas .c { font-size:14px; padding:7px 12px; }
+    .sheet-b .chips { justify-content:center; }
+    /* popup */
+    .kp { text-align:center; padding:20px 16px 28px; } .kp h2 { font-size:25px; } .kp .sub { font-size:14.5px; } .kp .free { font-size:15px; }
+    .kp .acts .btn { font-size:15.5px; padding:12px 18px; }
+  }
 </style>
 </head>
 <body>
@@ -261,7 +305,7 @@
       <h3>Built by Kino</h3>
       <p>We're a branding studio, and we get stuck too. We made this to get ourselves moving, then shared it. If your own brand idea is ready to leave the page, we'd love to help.</p>
     </div>
-    <a class="btn mint" style="text-decoration:none;text-align:center" href="https://ig.me/m/kinocomputergraphics" target="_blank" rel="noopener">Say hi 👋</a>
+    <a class="btn mint" style="text-decoration:none;text-align:center" href="https://www.instagram.com/not.anjali__/" target="_blank" rel="noopener">Say hi 👋</a>
   </section>
   <footer>Made with care by <a href="https://thefoundrybykino.com" target="_blank" rel="noopener" style="color:inherit;font-weight:800">Kino</a> · Your photos and ideas stay on your device.</footer>
 </main>
@@ -277,8 +321,9 @@
   <h2 id="kp-t">Psst. We made this site.</h2>
   <p class="sub">Rut Kit is built by Kino, a branding studio. If you like something like this, something people enjoy and keep coming back to, we can make one for your brand.</p>
   <p class="free">Say hi. We reply fast.</p>
+  <p class="muted" style="font-size:13px;margin:-6px 0 12px;text-align:center">Tap <b>Message</b> on our profile.</p>
   <div class="acts">
-    <a class="btn" id="kp-dm" href="https://ig.me/m/kinocomputergraphics" target="_blank" rel="noopener">DM us on Instagram</a>
+    <a class="btn" id="kp-dm" href="https://www.instagram.com/not.anjali__/" target="_blank" rel="noopener">Message us on Instagram</a>
     <a class="btn ghost" id="kp-mail" href="mailto:anjali@thefoundrybykino.com?subject=Hi%20from%20Rut%20Kit" style="box-shadow:0 5px 0 var(--ink)">Email us</a>
     <button class="btn sm" id="kp-no" style="background:transparent;color:var(--soft);box-shadow:none;font-weight:700">Not now</button>
   </div>
