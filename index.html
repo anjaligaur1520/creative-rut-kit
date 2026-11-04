@@ -326,11 +326,35 @@
   .switch[aria-checked="true"] i::after { transform:translateX(18px); }
   .switch:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
   .theme .tag { display:inline-flex; gap:6px; align-items:center; }
+  /* ===== seasonal: Diwali night ===== */
+  .lights { display:none; position:absolute; left:0; right:0; bottom:-17px; height:18px; pointer-events:none;
+    background:
+      radial-gradient(circle at 50% 50%, #ff4d6d 0 5px, transparent 6.5px) 0 0/56px 18px repeat-x,
+      radial-gradient(circle at 50% 50%, #ffd166 0 5px, transparent 6.5px) 14px 0/56px 18px repeat-x,
+      radial-gradient(circle at 50% 50%, #4cc9f0 0 5px, transparent 6.5px) 28px 0/56px 18px repeat-x,
+      radial-gradient(circle at 50% 50%, #7bd88f 0 5px, transparent 6.5px) 42px 0/56px 18px repeat-x;
+    filter:drop-shadow(0 0 5px rgba(255,209,102,.95)); animation:twinkle 1.5s ease-in-out infinite alternate; }
+  @keyframes twinkle { from { opacity:.5; } to { opacity:1; } }
+  .cf.em { width:auto; height:auto; background:none !important; line-height:1; border-radius:0; }
+  html[data-season="diwali"] { --mint:#c2185b; --mint-d:#8e0f43; --orange:#ffc933; --yellow:#ffc933; }
+  html[data-season="diwali"] .lights { display:block; }
+  html[data-season="diwali"] body { background:
+      radial-gradient(rgba(255,201,51,.2) 1.2px, transparent 1.8px) 0 0/22px 22px,
+      linear-gradient(165deg,#241036 0%,#3f1244 45%,#661c34 100%); background-attachment:fixed; }
+  html[data-season="diwali"] .top { background:rgba(36,16,54,.94); border-bottom:2px solid #ffc933; }
+  html[data-season="diwali"] h1, html[data-season="diwali"] .lede, html[data-season="diwali"] .sec-h h2, html[data-season="diwali"] .sec-h p,
+  html[data-season="diwali"] footer, html[data-season="diwali"] .logo b, html[data-season="diwali"] .logo .by { color:#fff4dc; }
+  html[data-season="diwali"] h1 em { color:#ffc933; }
+  html[data-season="diwali"] .logo i.reg { border-color:#ffc933; box-shadow:3px 3px 0 #ffc933; }
+  html[data-season="diwali"] .tool, html[data-season="diwali"] .promo, html[data-season="diwali"] .theme, html[data-season="diwali"] .about, html[data-season="diwali"] .ticket { box-shadow:5px 5px 0 #ffc933; }
+  html[data-season="diwali"] .btn, html[data-season="diwali"] .btn.ghost, html[data-season="diwali"] .btn.mint, html[data-season="diwali"] .pill, html[data-season="diwali"] .switch { box-shadow:4px 4px 0 #ffc933; }
+  html[data-season="diwali"] .tool.fun { box-shadow:5px 5px 0 #ff8a00; }
 </style>
 </head>
 <body>
 
 <header class="top"><div class="wrap">
+  <div class="lights" aria-hidden="true"></div>
   <div class="logo"><a href="#top" aria-label="Rut Kit home"><i class="reg" aria-hidden="true"></i></a><span><a href="#top"><b>Rut Kit</b></a><a class="by" href="https://thefoundrybykino.com" target="_blank" rel="noopener" aria-label="Kino website, opens in a new tab">BY KINO ↗</a></span></div>
   <div class="top-r">
     <span class="pill hide-s" id="sparks" aria-live="polite">⚡ 0 wins today</span>
@@ -343,7 +367,7 @@
 
   <section class="hero">
     <div>
-      <span class="tag">free · no sign-up · no cap</span>
+      <span class="tag" id="tag-main">free · no sign-up · no cap</span>
       <h1>We got bored and made you <em>a way out.</em></h1>
       <p class="lede">Six tiny tools to get your brain moving again, plus a photo booth for when you'd rather just sit in it. No pressure. Ugly is allowed.</p>
       <div class="cta">
@@ -353,12 +377,12 @@
     </div>
     <div class="ticket" aria-hidden="true">
       <h3>VIBE CHECK · #RUT-001</h3>
-      <div class="ln"><span>Brain</span><span>buffering…</span></div>
-      <div class="ln"><span>Mood</span><span>stuck, but make it fun</span></div>
-      <div class="ln"><span>Plan</span><span>tap one thing</span></div>
+      <div class="ln"><span>Brain</span><span id="vc-brain">buffering…</span></div>
+      <div class="ln"><span>Mood</span><span id="vc-mood">stuck, but make it fun</span></div>
+      <div class="ln"><span>Plan</span><span id="vc-plan">tap one thing</span></div>
       <div class="ln tot"><span>Cost</span><span>₹0, no cap</span></div>
       <div class="track"><span class="fillbar"><span class="rider"></span></span></div>
-      <p class="cap">almost unstuck…</p>
+      <p class="cap" id="vc-cap">almost unstuck…</p>
     </div>
   </section>
 
@@ -628,10 +652,10 @@ function renderBrand(root) {
 
 /* ================= TOOL 2: MINI BRIEF ================= */
 function renderBrief(root) {
-  const b = { client: pick(CLIENTS), budget: pick(BUDGETS), deadline: pick(DEADLINES), ask: pick(ASKS) };
+  const b = { client: pick(clients()), budget: pick(BUDGETS), deadline: pick(DEADLINES), ask: pick(ASKS) };
   let timer = null;
   const LABELS = { client:'Client', budget:'Budget', deadline:'Deadline', ask:'The ask' };
-  const LISTS = { client:CLIENTS, budget:BUDGETS, deadline:DEADLINES, ask:ASKS };
+  const LISTS = { client:clients(), budget:BUDGETS, deadline:DEADLINES, ask:ASKS };
   root.innerHTML = `
   <div class="step" id="b1">
     <p class="muted">A surprise client just walked in. Re-roll any line with 🔄 until it feels fun.</p>
@@ -663,8 +687,8 @@ function renderBrief(root) {
 
 /* ================= TOOL: WHAT IF? ================= */
 function renderWhatIf(root) {
-  const w = { brand: pick(WI_BRANDS), product: pick(WI_PRODUCTS) };
-  const LABELS = { brand:'Brand', product:'Launches' }, LISTS = { brand:WI_BRANDS, product:WI_PRODUCTS };
+  const w = { brand: pick(WI_BRANDS), product: pick(prods()) };
+  const LABELS = { brand:'Brand', product:'Launches' }, LISTS = { brand:WI_BRANDS, product:prods() };
   let timer = null;
   const q = () => `What if ${w.brand} launched ${w.product}?`;
   root.innerHTML = `
@@ -689,7 +713,7 @@ function renderWhatIf(root) {
   };
   draw();
   $('#wf', root).addEventListener('click', e => { const r = e.target.closest('.re'); if (!r) return; w[r.dataset.k] = pick(LISTS[r.dataset.k]); draw(); });
-  $('#wall', root).addEventListener('click', () => { w.brand = pick(WI_BRANDS); w.product = pick(WI_PRODUCTS); draw(); });
+  $('#wall', root).addEventListener('click', () => { w.brand = pick(WI_BRANDS); w.product = pick(prods()); draw(); });
   $('#wcopy', root).addEventListener('click', e => {
     const t = q() + ' (made with Rut Kit by Kino)';
     (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => { e.target.textContent = 'Copied ✓'; }, () => { e.target.textContent = 'Copy failed. Select the text instead'; });
@@ -708,9 +732,26 @@ function renderWhatIf(root) {
 }
 
 /* ---------- monthly theme (edit the lines below each month) ---------- */
+const SEASON = { on: false, products: null, clients: null, worlds: null };
+const prods = () => SEASON.products || WI_PRODUCTS;
+const clients = () => SEASON.clients || CLIENTS;
+const worlds = () => SEASON.worlds || WORLDS;
 const THEMES = {
-  '2026-11': { name: 'November edition: the leftovers', line: 'Made something out of whatever was lying around? Dump it.', accent: '#e65f00', dark: '#a84400', emoji: '🪔' },
-  '2026-12': { name: 'December edition: the year-end dump', line: 'Everything you made this year, in one place.', accent: '#2f6bff', dark: '#1a3fb0', emoji: '❄️' }
+  '2026-11': { look: 'diwali', name: 'November edition: Diwali, but make it ideas', line: 'Light one idea. Dump what you made.', accent: '#ff8a00', dark: '#b85a00', emoji: '🪔',
+    burst: ['🪔', '✨', '🎇', '🌼', '🪔', '🎆'],
+    tag: 'free · no sign-up · happy diwali', brain: 'full of mithai', mood: 'stuck, but make it festive', plan: 'light one idea', cap: 'diya mode: on',
+    products: ['a diya', 'a string of fairy lights', 'an agarbatti', 'a rangoli kit', 'a box of mithai', 'a sparkler', 'a toran', 'a gift hamper', 'a kaju katli', 'a lantern', 'a scented candle', 'a puja thali', 'a Diwali card', 'a bag of dry fruits', 'a Diwali outfit', 'a floating candle', 'a wall of fairy lights', 'a diya-shaped speaker', 'an LED diya', 'a marigold garland', 'a pair of festive jhumkas', 'a box of soan papdi'],
+    clients: ['A mithai shop that wants to look premium', 'A diya brand run by two grandmas', 'A fairy-lights startup', 'A corporate gifting box company', 'A rangoli-stencil side hustle', 'An eco-friendly sparkler brand', 'An agarbatti brand for Gen Z', 'A cracker-free Diwali campaign for a city'],
+    worlds: [
+      { n: 'A Diwali market', e: '🪔', notes: ['Every stall glows, so you look up', "Everyone buys one thing they didn't plan", 'Bargaining is part of the fun'] },
+      { n: 'A mithai shop', e: '🍬', notes: ['The box matters as much as the sweet', 'Gifting is the real product', 'The queue is part of the ritual'] },
+      { n: 'A rangoli', e: '🌸', notes: ['Start from the centre and grow outward', 'Small repeated patterns add up to wow', "It's temporary, and that's the point"] },
+      { n: 'A night of fireworks', e: '🎆', notes: ['The build-up is half the show', 'Short bursts beat one long noise', 'Everyone looks up together'] },
+      { n: 'A family puja', e: '🙏', notes: ['A ritual makes it feel special', 'Everyone has a small job', 'Same steps every year, new meaning'] }
+    ] },
+  '2026-12': { name: 'December edition: the year-end dump', line: 'Everything you made this year, in one place.', accent: '#2f6bff', dark: '#1a3fb0', emoji: '❄️',
+    burst: ['❄️', '✨', '⛄', '🎄'],
+    products: ['a woollen muffler', 'a hot chocolate mix', 'a snow globe', 'a cosy blanket', 'a tree ornament', 'a gift hamper', 'a fairy-light jar', 'a hand-knit sweater', 'a pair of mittens', 'a scented candle'] }
 };
 (function renderTheme() {
   const q = new URLSearchParams(location.search).get('theme');           // ?theme=2026-12 previews another month
@@ -723,12 +764,27 @@ const THEMES = {
     <div class="tr"><button class="switch" id="season" role="switch" aria-checked="false" type="button"><i aria-hidden="true"></i><span>Seasonal vibe</span></button>
     <button class="btn sm ghost" data-open="madeit">Dump yours →</button></div>`;
   const root = document.documentElement, sw = $('#season');
+  const orig = { tag: $('#tag-main').textContent, brain: $('#vc-brain').textContent, mood: $('#vc-mood').textContent, plan: $('#vc-plan').textContent, cap: $('#vc-cap').textContent };
+  function emojiBurst(list, n = 30) {
+    if (reduce) return;
+    for (let i = 0; i < n; i++) {
+      const e = document.createElement('i'); e.className = 'cf em'; e.textContent = pick(list);
+      e.style.left = Math.random() * 100 + 'vw'; e.style.fontSize = (18 + Math.random() * 16) + 'px';
+      e.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
+      e.style.animationDuration = (2 + Math.random() * 2) + 's'; e.style.animationDelay = Math.random() * .6 + 's';
+      document.body.appendChild(e); setTimeout(() => e.remove(), 4800);
+    }
+  }
   function apply(v, fx) {
     on = v; sw.setAttribute('aria-checked', String(v)); $('#season-e').textContent = v ? t.emoji : '✨';
     if (v) { root.style.setProperty('--coral', t.accent); root.style.setProperty('--coral-d', t.dark); }
     else { root.style.removeProperty('--coral'); root.style.removeProperty('--coral-d'); }
+    if (v && t.look) root.dataset.season = t.look; else delete root.dataset.season;
+    Object.assign(SEASON, { on: v, products: v && t.products || null, clients: v && t.clients || null, worlds: v && t.worlds || null });
+    $('#tag-main').textContent = v && t.tag || orig.tag; $('#vc-brain').textContent = v && t.brain || orig.brain;
+    $('#vc-mood').textContent = v && t.mood || orig.mood; $('#vc-plan').textContent = v && t.plan || orig.plan; $('#vc-cap').textContent = v && t.cap || orig.cap;
     try { localStorage.setItem(KEY, v ? 'on' : 'off'); } catch (e) {}
-    track('season_' + (v ? 'on' : 'off'), key); if (v && fx) confetti(26);
+    track('season_' + (v ? 'on' : 'off'), key); if (v && fx) emojiBurst(t.burst || [t.emoji]);
   }
   sw.addEventListener('click', () => apply(!on, true));
   if (on) apply(true, false);
@@ -848,10 +904,10 @@ function renderSteal(root) {
   $('#proj', root).addEventListener('input', () => { $('#spin', root).disabled = !$('#proj', root).value.trim(); });
   const spin = () => {
     $('#c1', root).hidden = true; $('#c2', root).hidden = false; pickNote = ''; $('#how', root).value = ''; $('#fin', root).disabled = true; $('#notes', root).innerHTML = '';
-    let n = 0; const iv = setInterval(() => { const w = pick(WORLDS); $('#we', root).textContent = w.e; $('#wn', root).textContent = w.n; if (++n > (reduce ? 0 : 10)) { clearInterval(iv); land(); } }, 90);
+    let n = 0; const iv = setInterval(() => { const w = pick(worlds()); $('#we', root).textContent = w.e; $('#wn', root).textContent = w.n; if (++n > (reduce ? 0 : 10)) { clearInterval(iv); land(); } }, 90);
   };
   function land() {
-    world = pick(WORLDS); $('#we', root).textContent = world.e; $('#wn', root).textContent = world.n;
+    world = pick(worlds()); $('#we', root).textContent = world.e; $('#wn', root).textContent = world.n;
     $('#notes', root).innerHTML = world.notes.map(t => `<button class="note">${t}</button>`).join('');
     $$('.note', root).forEach(b => b.addEventListener('click', () => { pickNote = b.textContent; $$('.note', root).forEach(z => z.classList.toggle('on', z === b)); upd(); }));
   }
