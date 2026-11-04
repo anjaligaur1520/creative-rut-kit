@@ -307,6 +307,22 @@
   .card { border-radius:10px; box-shadow:4px 4px 0 var(--ink); }
   .sum { border-radius:10px; }
   .deliv { border-radius:10px; }
+  /* ===== monthly theme + made-it dump ===== */
+  .theme { display:flex; align-items:center; gap:10px 14px; flex-wrap:wrap; margin:18px 0 0; padding:10px 14px; background:#fff; border:2px solid var(--ink); border-radius:8px; box-shadow:4px 4px 0 var(--ink); }
+  .theme .tag { margin:0; }
+  .theme b { font-family:'Archivo',sans-serif; font-weight:800; font-stretch:106%; font-size:18px; }
+  .theme .line { flex:1; min-width:200px; color:var(--soft); font-weight:700; font-size:15px; }
+  .drop { display:grid; place-items:center; text-align:center; gap:4px; border:2.5px dashed var(--ink); border-radius:12px; padding:24px 14px; background:#fff6cc; cursor:pointer; margin:12px 0; }
+  .drop:hover, .drop.over { background:#ffec7a; }
+  .drop .big { font-size:24px; } .drop small { color:var(--soft); font-weight:700; }
+  .board { display:grid; grid-template-columns:repeat(auto-fill,minmax(132px,1fr)); gap:12px; margin-top:14px; }
+  .tile { position:relative; aspect-ratio:1; border:2px solid var(--ink); border-radius:10px; overflow:hidden; background:#fff; box-shadow:3px 3px 0 var(--ink); }
+  .tile img, .tile video { width:100%; height:100%; object-fit:cover; display:block; }
+  .tile .cap { position:absolute; left:0; right:0; bottom:0; padding:5px 8px; font-size:12px; font-weight:700; line-height:1.25; background:rgba(251,247,238,.94); border-top:2px solid var(--ink); }
+  .tile .x { position:absolute; top:6px; right:6px; width:28px; height:28px; border-radius:8px; border:2px solid var(--ink); background:#fff; font-weight:800; line-height:1; }
+  .tile .badge { position:absolute; top:6px; left:6px; background:var(--yellow); border:2px solid var(--ink); border-radius:6px; font:700 10px 'Space Mono', monospace; padding:2px 6px; text-transform:uppercase; letter-spacing:.04em; }
+  .empty { text-align:center; color:var(--soft); font-weight:700; padding:6px 10px 2px; }
+  @media (max-width:640px) { .theme { text-align:center; justify-content:center; } .theme .line { min-width:0; flex-basis:100%; font-size:14px; } .board { grid-template-columns:repeat(2,1fr); } .drop .big { font-size:20px; } }
 </style>
 </head>
 <body>
@@ -320,6 +336,8 @@
 </div></header>
 
 <main class="wrap" id="top">
+  <section class="theme" id="theme" aria-label="This month's theme"></section>
+
   <section class="hero">
     <div>
       <span class="tag">free · no sign-up · no minimum order</span>
@@ -521,6 +539,7 @@ const TOOLS = {
   brief: { e:'📋', t:'Mini Brief', p:'A surprise client, a tiny budget and a deadline. Make a plan in 15 minutes.', time:'15 min', bg:'#fff0a8' },
   dump: { e:'🗑️', t:'Bad Ideas Dump', p:'Write 10 terrible ideas in 2 minutes. One will be secretly good.', time:'2 min', bg:'#e6e2d6' },
   steal: { e:'🕵️', t:'Steal From Another World', p:'Borrow one idea from a wedding, a station or an arcade for your own project.', time:'5 min', bg:'#cfe9f7' },
+  madeit: { e:'📥', t:'The Made-it Dump', p:'Made something? Dump the photos and videos here. No face needed, no judgement.', time:'2 min', bg:'#fff0a8' },
   booth: { e:'📸', t:'The Rut Photo Booth', p:'Not ready to escape? Step in, close the curtain and enjoy the rut. 4 photos, one strip.', time:'1 min', fun:true }
 };
 $('#menu').innerHTML = Object.entries(TOOLS).map(([id, x]) => `
@@ -549,7 +568,7 @@ function closeTool() {
 document.addEventListener('click', e => { const o = e.target.closest('[data-open]'); if (o) openTool(o.dataset.open); });
 $('#close').addEventListener('click', closeTool); $('#veil').addEventListener('click', closeTool);
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('#sheet').classList.contains('on')) closeTool(); });
-$('#surprise').addEventListener('click', () => openTool(pick(Object.keys(TOOLS).filter(k => k !== 'booth'))));
+$('#surprise').addEventListener('click', () => openTool(pick(Object.keys(TOOLS).filter(k => k !== 'booth' && k !== 'madeit'))));
 
 /* ================= TOOL 1: YOUR OWN BRAND ================= */
 function renderBrand(root) {
@@ -684,6 +703,72 @@ function renderWhatIf(root) {
   $('#done', root).addEventListener('click', finish);
   $('#again', root).addEventListener('click', () => openTool('whatif'));
   return () => timer && timer.stop();
+}
+
+/* ---------- monthly theme (edit the lines below each month) ---------- */
+const THEMES = {
+  '2026-11': { name: 'November edition: the leftovers', line: 'Made something out of whatever was lying around? Dump it.' },
+  '2026-12': { name: 'December edition: the year-end dump', line: 'Everything you made this year, in one place.' }
+};
+(function renderTheme() {
+  const d = new Date(), key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  const month = d.toLocaleString('en', { month: 'long' });
+  const t = THEMES[key] || { name: month + ' edition', line: 'Made something this month? Dump it.' };
+  $('#theme').innerHTML = `<span class="tag">This month</span><b>${t.name}</b><span class="line">${t.line}</span><button class="btn sm ghost" data-open="madeit">Dump yours →</button>`;
+})();
+
+/* ---------- tiny local store for the dump (IndexedDB; falls back to this visit only) ---------- */
+const DumpDB = {
+  mem: [], db: null,
+  open() { return new Promise(res => { try { const r = indexedDB.open('rutkit', 1); r.onupgradeneeded = () => r.result.createObjectStore('dump', { keyPath: 'id' }); r.onsuccess = () => { this.db = r.result; res(); }; r.onerror = () => res(); } catch (e) { res(); } }); },
+  all() { return new Promise(res => { if (!this.db) return res(this.mem.slice()); try { const q = this.db.transaction('dump').objectStore('dump').getAll(); q.onsuccess = () => res(q.result.sort((a, b) => a.t - b.t)); q.onerror = () => res(this.mem.slice()); } catch (e) { res(this.mem.slice()); } }); },
+  put(it) { return new Promise(res => { if (!this.db) { this.mem.push(it); return res(); } try { const tx = this.db.transaction('dump', 'readwrite'); tx.objectStore('dump').put(it); tx.oncomplete = () => res(); tx.onerror = () => { this.mem.push(it); res(); }; } catch (e) { this.mem.push(it); res(); } }); },
+  del(id) { return new Promise(res => { this.mem = this.mem.filter(x => x.id !== id); if (!this.db) return res(); try { const tx = this.db.transaction('dump', 'readwrite'); tx.objectStore('dump').delete(id); tx.oncomplete = () => res(); tx.onerror = () => res(); } catch (e) { res(); } }); }
+};
+
+/* ================= TOOL: THE MADE-IT DUMP ================= */
+function renderMadeIt(root) {
+  const urls = []; const MAX = 12, MAXMB = 60;
+  root.innerHTML = `
+  <div class="how"><b>Made something? Dump it here.</b><br>A logo sketch, a messy desk, a half-finished idea, the thing you made in your rut. Photos or videos. <b>No face needed</b> and no judgement. Rough is welcome.
+    <div class="ex">Your dump stays on your device. Nothing is uploaded or shown to anyone.</div></div>
+  <label class="drop" id="drop"><input type="file" id="files" accept="image/*,video/*" multiple hidden><span class="big">📥 Tap to add, or drop files here</span><small>photos and videos · up to ${MAX}</small></label>
+  <input class="in" id="cap" maxlength="80" placeholder="One line about it (optional)" autocomplete="off">
+  <div class="board" id="board"></div>
+  <p class="empty" id="empty" hidden>Nothing here yet, and that's fine. Start with the messiest thing you've got.</p>
+  <div class="row" style="margin-top:14px"><button class="btn ghost sm" id="clear" hidden>Clear my dump</button></div>`;
+  const board = $('#board', root), empty = $('#empty', root), clr = $('#clear', root);
+  const sample = `<div class="tile"><img src="assets/sample-rinse.jpg" alt="Sample: a made-up haircare brand called Rinse"><span class="badge">Sample · made by Kino</span><div class="cap">Rinse: a haircare brand I made up in one afternoon</div></div>`;
+  const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  async function draw() {
+    urls.splice(0).forEach(u => URL.revokeObjectURL(u));
+    const items = await DumpDB.all();
+    board.innerHTML = sample + items.map(it => { const u = URL.createObjectURL(it.blob); urls.push(u);
+      const media = it.type.startsWith('video') ? `<video src="${u}" muted playsinline loop preload="metadata"></video>` : `<img src="${u}" alt="${esc(it.cap || 'Something you made')}">`;
+      return `<div class="tile" data-id="${it.id}">${media}<button class="x" aria-label="Remove">×</button>${it.cap ? `<div class="cap">${esc(it.cap)}</div>` : ''}</div>`; }).join('');
+    $$('.tile video', board).forEach(v => { v.addEventListener('mouseenter', () => v.play().catch(() => {})); v.addEventListener('mouseleave', () => v.pause()); v.addEventListener('click', () => (v.paused ? v.play() : v.pause())); });
+    empty.hidden = items.length > 0; clr.hidden = items.length === 0; return items;
+  }
+  async function add(files) {
+    const items = await DumpDB.all(); let room = MAX - items.length, added = 0, skipped = 0;
+    for (const f of files) {
+      if (!/^(image|video)\//.test(f.type)) { skipped++; continue; }
+      if (room <= 0 || f.size > MAXMB * 1048576) { skipped++; continue; }
+      await DumpDB.put({ id: Date.now() + '-' + Math.random().toString(36).slice(2, 7), t: Date.now(), blob: f, type: f.type, cap: $('#cap', root).value.trim() }); room--; added++;
+    }
+    await draw();
+    if (added) { $('#cap', root).value = ''; deliver('your dump (' + added + ' thing' + (added > 1 ? 's' : '') + ')'); track('tool_complete', 'madeit'); }
+    if (skipped) { empty.hidden = false; empty.textContent = skipped + ' file' + (skipped > 1 ? 's' : '') + ' skipped. Only photos and videos, up to ' + MAXMB + 'MB each, ' + MAX + ' in total.'; }
+  }
+  $('#files', root).addEventListener('change', e => { add([...e.target.files]); e.target.value = ''; });
+  const drop = $('#drop', root);
+  ['dragenter', 'dragover'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.add('over'); }));
+  ['dragleave', 'drop'].forEach(ev => drop.addEventListener(ev, e => { e.preventDefault(); drop.classList.remove('over'); }));
+  drop.addEventListener('drop', e => add([...e.dataTransfer.files]));
+  board.addEventListener('click', async e => { const x = e.target.closest('.x'); if (!x) return; await DumpDB.del(x.closest('.tile').dataset.id); draw(); });
+  clr.addEventListener('click', async () => { for (const it of await DumpDB.all()) await DumpDB.del(it.id); draw(); });
+  DumpDB.open().then(draw);
+  return () => urls.forEach(u => URL.revokeObjectURL(u));
 }
 
 /* ================= TOOL 3: BAD IDEAS DUMP ================= */
@@ -858,7 +943,7 @@ function renderBooth(root) {
   return stopCam;
 }
 
-const RENDER = { brand: renderBrand, brief: renderBrief, dump: renderDump, steal: renderSteal, whatif: renderWhatIf, booth: renderBooth };
+const RENDER = { madeit: renderMadeIt, brand: renderBrand, brief: renderBrief, dump: renderDump, steal: renderSteal, whatif: renderWhatIf, booth: renderBooth };
 </script>
 </body>
 </html>
