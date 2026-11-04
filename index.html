@@ -315,6 +315,13 @@
   .tile .badge { position:absolute; top:6px; left:6px; background:var(--yellow); border:2px solid var(--ink); border-radius:6px; font:700 10px 'Space Mono', monospace; padding:2px 6px; text-transform:uppercase; letter-spacing:.04em; }
   .empty { text-align:center; color:var(--soft); font-weight:700; padding:6px 10px 2px; }
   @media (max-width:640px) { .theme { text-align:center; justify-content:center; } .theme .line { min-width:0; flex-basis:100%; font-size:14px; } .board { grid-template-columns:repeat(2,1fr); } .drop .big { font-size:20px; } }
+  .switch { display:inline-flex; align-items:center; gap:9px; border:2px solid var(--ink); border-radius:999px; background:#fff; padding:4px 14px 4px 5px; font:800 14px 'DM Sans',sans-serif; color:var(--ink); box-shadow:3px 3px 0 var(--ink); cursor:pointer; }
+  .switch i { position:relative; width:42px; height:24px; border-radius:999px; background:#d9d6cc; border:2px solid var(--ink); transition:background .2s; flex:none; }
+  .switch i::after { content:''; position:absolute; top:1px; left:1px; width:18px; height:18px; border-radius:50%; background:#fff; border:2px solid var(--ink); transition:transform .22s cubic-bezier(.3,1.5,.5,1); }
+  .switch[aria-checked="true"] i { background:var(--coral); }
+  .switch[aria-checked="true"] i::after { transform:translateX(18px); }
+  .switch:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--ink); }
+  .theme .tag { display:inline-flex; gap:6px; align-items:center; }
 </style>
 </head>
 <body>
@@ -333,7 +340,7 @@
   <section class="hero">
     <div>
       <span class="tag">free · no sign-up · no cap</span>
-      <h1>Stuck in a rut? Same. <em>Tap something.</em></h1>
+      <h1>Stuck in a rut? Same. <em>Let's get unstuck.</em></h1>
       <p class="lede">Six tiny tools to get your brain moving again, plus a photo booth for when you'd rather just sit in it. No pressure. Ugly is allowed.</p>
       <div class="cta">
         <a class="btn" href="#tools" style="text-decoration:none;display:inline-block">Start something</a>
@@ -347,12 +354,12 @@
       <div class="ln"><span>Plan</span><span>tap one thing</span></div>
       <div class="ln tot"><span>Cost</span><span>₹0, no cap</span></div>
       <div class="track"><span class="fillbar"><span class="rider"></span></span></div>
-      <p class="cap">loading your brain…</p>
+      <p class="cap">almost unstuck…</p>
     </div>
   </section>
 
   <section class="promos" aria-label="Perks">
-    <div class="promo p1"><b>Free, obviously</b><span>nobody is selling you anything</span></div>
+    <div class="promo p1"><b>Totally free</b><span>no card, no catch</span></div>
     <div class="promo p2"><b>No login, no spam</b><span>open it, tap it, leave</span></div>
     <div class="promo p3"><b>Your pace</b><span>2 minutes or 20, no judgement</span></div>
   </section>
@@ -365,7 +372,7 @@
   <section class="about">
     <div>
       <h3>Built by Kino</h3>
-      <p>We're a branding studio, and we get stuck too. We made this to get ourselves moving, then shared it. If your own brand idea is ready to leave the page, we'd love to help.</p>
+      <p>We're an organic creative studio, and we get stuck too. We made this to get ourselves moving, then shared it. If your own brand idea is ready to leave the page, we'd love to help.</p>
     </div>
     <a class="btn mint" style="text-decoration:none;text-align:center" href="https://www.instagram.com/not.anjali__/" target="_blank" rel="noopener">Say hi 👋</a>
   </section>
@@ -381,7 +388,7 @@
 <div class="kp" id="kp" role="dialog" aria-modal="true" aria-labelledby="kp-t">
   <span class="tag">Made by Kino</span>
   <h2 id="kp-t">Psst. We made this site.</h2>
-  <p class="sub">Rut Kit is built by Kino, a branding studio. If you like something like this, something people enjoy and keep coming back to, we can make one for your brand.</p>
+  <p class="sub">Rut Kit is built by Kino, an organic creative studio. If you like something like this, something people enjoy and keep coming back to, we can make one for your brand.</p>
   <p class="free">Say hi. We reply fast.</p>
   <p class="muted" style="font-size:13px;margin:-6px 0 12px;text-align:center">Tap <b>Message</b> on our profile.</p>
   <div class="acts">
@@ -698,14 +705,29 @@ function renderWhatIf(root) {
 
 /* ---------- monthly theme (edit the lines below each month) ---------- */
 const THEMES = {
-  '2026-11': { name: 'November edition: the leftovers', line: 'Made something out of whatever was lying around? Dump it.' },
-  '2026-12': { name: 'December edition: the year-end dump', line: 'Everything you made this year, in one place.' }
+  '2026-11': { name: 'November edition: the leftovers', line: 'Made something out of whatever was lying around? Dump it.', accent: '#e65f00', dark: '#a84400', emoji: '🪔' },
+  '2026-12': { name: 'December edition: the year-end dump', line: 'Everything you made this year, in one place.', accent: '#2f6bff', dark: '#1a3fb0', emoji: '❄️' }
 };
 (function renderTheme() {
-  const d = new Date(), key = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0');
+  const q = new URLSearchParams(location.search).get('theme');           // ?theme=2026-12 previews another month
+  const d = new Date(), key = q || (d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0'));
   const month = d.toLocaleString('en', { month: 'long' });
-  const t = THEMES[key] || { name: month + ' edition', line: 'Made something this month? Dump it.' };
-  $('#theme').innerHTML = `<span class="tag">This month</span><b>${t.name}</b><span class="line">${t.line}</span><button class="btn sm ghost" data-open="madeit">Dump yours →</button>`;
+  const t = THEMES[key] || { name: month + ' edition', line: 'Made something this month? Dump it.', accent: '#0a9bd9', dark: '#06709c', emoji: '✨' };
+  const KEY = 'rutkit-season'; let on = false;
+  try { on = localStorage.getItem(KEY) === 'on'; } catch (e) {}
+  $('#theme').innerHTML = `<span class="tag"><span id="season-e">✨</span> This month</span><b>${t.name}</b><span class="line">${t.line}</span>
+    <button class="switch" id="season" role="switch" aria-checked="false" type="button"><i aria-hidden="true"></i><span>Seasonal vibe</span></button>
+    <button class="btn sm ghost" data-open="madeit">Dump yours →</button>`;
+  const root = document.documentElement, sw = $('#season');
+  function apply(v, fx) {
+    on = v; sw.setAttribute('aria-checked', String(v)); $('#season-e').textContent = v ? t.emoji : '✨';
+    if (v) { root.style.setProperty('--coral', t.accent); root.style.setProperty('--coral-d', t.dark); }
+    else { root.style.removeProperty('--coral'); root.style.removeProperty('--coral-d'); }
+    try { localStorage.setItem(KEY, v ? 'on' : 'off'); } catch (e) {}
+    track('season_' + (v ? 'on' : 'off'), key); if (v && fx) confetti(26);
+  }
+  sw.addEventListener('click', () => apply(!on, true));
+  if (on) apply(true, false);
 })();
 
 /* ---------- tiny local store for the dump (IndexedDB; falls back to this visit only) ---------- */
