@@ -729,7 +729,7 @@ function renderMadeIt(root) {
   <p class="empty" id="empty" hidden>Nothing here yet, and that's fine. Start with the messiest thing you've got.</p>
   <div class="row" style="margin-top:14px"><button class="btn ghost sm" id="clear" hidden>Clear my dump</button></div>`;
   const board = $('#board', root), empty = $('#empty', root), clr = $('#clear', root);
-  const sample = `<div class="tile"><img src="assets/sample-rinse.jpg" alt="Sample: a made-up haircare brand called Rinse"><span class="badge">Sample · made by Kino</span><div class="cap">Rinse: a haircare brand I made up in one afternoon</div></div>`;
+  const sample = `<div class="tile"><img src="assets/sample-rinse.jpg" alt="Sample: a made-up haircare brand called Rinse"><span class="badge">by Kino</span><div class="cap">Rinse: a haircare brand I made up in one afternoon</div></div>`;
   const esc = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
   async function draw() {
     urls.splice(0).forEach(u => URL.revokeObjectURL(u));
